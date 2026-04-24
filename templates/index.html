@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainer Generator - AI-Powered Lesson Introductions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            width: auto;
+            padding: 12px 30px;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffe0e0;
+            border-radius: 10px;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .options-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .options-container.show {
+            display: block;
+        }
+
+        .options-title {
+            font-size: 18px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .option-card {
+            background: #f8f9ff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-card:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option-card.selected {
+            border-color: #667eea;
+            background: #e8ebff;
+        }
+
+        .option-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .option-text {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .select-btn-container {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .select-btn-container.show {
+            display: block;
+        }
+
+        .final-result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            display: none;
+        }
+
+        .final-result.show {
+            display: block;
+        }
+
+        .final-result-label {
+            font-size: 14px;
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .final-result-text {
+            font-size: 18px;
+            color: #1b5e20;
+            line-height: 1.8;
+        }
+
+        .copy-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Explainer Generator</h1>
+        <p class="subtitle">AI-Powered Lesson Introductions | Gemini AI</p>
+
+        <form id="explainerForm">
+            <div class="form-group">
+                <label for="language">Language</label>
+                <select id="language" required>
+                    <option value="">Select a language</option>
+                    <option value="French">French</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="German">German</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Mandarin Chinese">Mandarin Chinese</option>
+                    <option value="Korean">Korean</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Russian">Russian</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="topic">Topic (in any language)</label>
+                <input type="text" id="topic" placeholder="e.g., Fruits, Les fruits, Colors, Animals" required>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">Generate 5 Explainer Options</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating explainer options...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="options-container" id="optionsContainer">
+            <div class="options-title">Select Your Preferred Explainer:</div>
+            <div id="optionsList"></div>
+            <div class="select-btn-container" id="selectBtnContainer">
+                <button class="btn btn-success" id="confirmBtn">Use Selected Explainer</button>
+            </div>
+        </div>
+
+        <div class="final-result" id="finalResult">
+            <div class="final-result-label">✅ Selected Unit Explainer</div>
+            <p class="final-result-text" id="finalResultText"></p>
+            <button class="copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedOption = null;
+
+        document.getElementById('explainerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const language = document.getElementById('language').value;
+            const topic = document.getElementById('topic').value;
+            const btn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const finalResult = document.getElementById('finalResult');
+
+            error.classList.remove('show');
+            optionsContainer.classList.remove('show');
+            finalResult.classList.remove('show');
+            loading.classList.add('show');
+            btn.disabled = true;
+            selectedOption = null;
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ language, topic })
+                });
+                
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const optionsList = document.getElementById('optionsList');
+                    optionsList.innerHTML = '';
+                    
+                    data.explainers.forEach((text, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'option-card';
+                        card.innerHTML = `<span class="option-number">${index + 1}</span><span class="option-text">${text}</span>`;
+                        
+                        card.addEventListener('click', () => {
+                            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                            card.classList.add('selected');
+                            selectedOption = text;
+                            document.getElementById('selectBtnContainer').classList.add('show');
+                        });
+                        
+                        optionsList.appendChild(card);
+                    });
+                    
+                    optionsContainer.classList.add('show');
+                } else {
+                    throw new Error(data.error || 'Failed to generate');
+                }
+            } catch (err) {
+                error.textContent = '❌ ' + err.message;
+                error.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('confirmBtn').addEventListener('click', () => {
+            if (selectedOption) {
+                document.getElementById('finalResultText').textContent = selectedOption;
+                document.getElementById('finalResult').classList.add('show');
+            }
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const text = document.getElementById('finalResultText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy to Clipboard';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
